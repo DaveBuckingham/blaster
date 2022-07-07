@@ -1,22 +1,25 @@
-%+-------------------------------------------------------+%
-%|              DAVE'S MATLAB SHOOTER v0.3               |%
-%|                 by David Buckingham                   |%
-%|                                                       |%
-%|         a vertical-scrolling shoot-em-up game         |%
-%+-------------------------------------------------------+%
+%+---------------------------------------------------------+%
+%|              DAVE'S MATLAB BLASTER v0.4                 |%
+%|                 by David Buckingham                     |%
+%|                                                         |%
+%|         a vertical-scrolling shoot-em-up game           |%
+%+---------------------------------------------------------+%
 
-%+-------------------------------------------------------+%
-%|                         TIPS                          |%
-%|                                                       |%
-%| -kill cruisers as quickly as possible.                |%
-%| -game lagging too much? set NO_FILL to true.          |%
-%| -program needs access to "hitTest.m"                  |%
-%| -questions? email xorvox@hotmail.com                  |%
-%+-------------------------------------------------------+%
+%+---------------------------------------------------------+%
+%|                         TIPS                            |%
+%|                                                         |%
+%| -kill cruisers as quickly as possible.                  |%
+%| -game lagging too much? set NO_FILL to true.            |%
+%| -questions? email davidnormanbuckingham@protonmail.com  |%
+%+---------------------------------------------------------+%
+
+%v0.4
+%-moved hitTest function inside main function so program is a single file.
+%-fixed typos in comments
 
 %v0.3
 %-bullets, fireballs, explosions, pause messages are all cleared from the
-% secreen when game is reset instead of remaining behind the intro message.
+% screen when game is reset instead of remaining behind the intro message.
 %-fixed image layering order. bots now appear behind messages like game
 % over and pause, behind health bars, and above stars. fireballs appear
 % behind hud bars.
@@ -24,7 +27,7 @@
 % SUPER_SHOOT_DURATION which is 14. Previously, it was set to 1 and
 % decremented each frame by SUPER_SHOOT_DRAIN, which was set to .002.
 %-no points are scored if INVINCIBLE
-%-the problem with bot plots changin slightly when bullets are on screen
+%-the problem with bot plots changing slightly when bullets are on screen
 % mysteriously fixed itself :)
 %-bots can exit bounds to left or right if less than BOT_END above bottom
 % instead of always moving out through the bottom of the screen.
@@ -42,11 +45,11 @@
 %-shorten break between waves to compensate for addition of BOT_START.
 %-explosion when fireball hits hero, so you know when your hit.
 %-minor updates to comments and code, e.g. comment correct fps.
-%-killHero calles makeExplosion instead of creating its own explosion.
+%-killHero calls makeExplosion instead of creating its own explosion.
 
 %known problems with v0.1:
-%-can lag  a bit. when there are many ships on the screen there's alot going
-% on each frame. I'm sure the code could use alot of optimization to make
+%-can lag  a bit. when there are many ships on the screen there's a lot going
+% on each frame. I'm sure the code could use a lot of optimization to make
 % things run faster. for a quick fix, setting NO_FILL to true should make a
 % big difference.
 %-bot plots change slightly when bullets are on screen. this drives me nuts.
@@ -87,10 +90,10 @@ PLOT_H = 324; %height
 %number frames between periodic tasks like bot generation and bot firing
 %this should be 10.
 WAIT_FRAMES = 10; %DONT CHANGE THIS. KEEP IT AT 10.
-%these "secons" assume precise frame delays, which matlab doesn't
+%these "seconds" assume precise frame delays, which matlab doesn't
 %guarantee. these "seconds" are about 1.5 real seconds on my machine. let
-%me know what you come up with. although there coule be something i'm
-%missing in my code thats causing this effect and the frame delays
+%me know what you come up with. although there could be something i'm
+%missing in my code that's causing this effect and the frame delays
 %could be accurate.
 WAVE_BREAK = 3; %number of seconds between waves
 ENCORE_DELAY = 1; %number of seconds between death and 'game over' message
@@ -129,7 +132,7 @@ BOT_SPEEDS = [2, 1.5, .5]; %[bot1, bot2, bot3]
 MAX_STAR_SPEED = 5;
 MIN_STAR_SPEED = 1;
 STILL_SPEED = 1; %how fast 'still' things like explosions should move.
-FIRE_SPEED = 2.5; %speed of enemry fireballs
+FIRE_SPEED = 2.5; %speed of enemy fireballs
 HERO_SPEED = 7.5;
 
 %displaying powerups
@@ -173,7 +176,7 @@ HERO_SHAPE = [1 0 1 2 3 4 3 1; ... %x values
   0 1 2 4 2 1 0 0];    %y values
 xScale = HERO_W / max(HERO_SHAPE(1,:));
 yScale = HERO_H / max(HERO_SHAPE(2,:));
-%coordinats for drawing hero at 0,0.
+%coordinates for drawing hero at 0,0.
 HERO = [HERO_SHAPE(1,:) .* xScale; HERO_SHAPE(2,:) .* yScale];
 
 %bots
@@ -1325,28 +1328,6 @@ encoreText = []; %used to display game over message. cleared by reset.
 
 
 %+-----------------------------------------------------------------------+
-%|                            HIT TEST FUNCTION                          |
-%+-----------------------------------------------------------------------+
-%input: x, y, width, height for one rectangle,
-%       EITHER x, y, for test point
-%       OR, x, y, width, height, for test rectangle
-  function [hit] = hitTest (x1, y1, w1, h1, x2, y2, varargin)
-    if size(varargin, 2) == 0
-      w2 = 0;
-      h2 = 0;
-    elseif size(varargin, 2) == 2
-      w2 = varargin{1};
-      h2 = varargin{2};
-    end
-
-    hit = (x2 + w2) > x1 && ...
-          x2 < (x1 + w1) && ...
-          (y2 + h2) > y1 && ...
-          y2 < (y1 + h1);
-  end
-
-
-%+-----------------------------------------------------------------------+
 %|                         CHECK COLLISIONS CBF                          |
 %+-----------------------------------------------------------------------+
 %check for collisions between (bots, hero), (bots, bullets), (fire, hero),
@@ -1527,13 +1508,7 @@ end
   end
 
   function mouseDownListener(src,event);
-    %     if intro
-    %       intro = false;
-    %     elseif gameOver
-    %       reset;
-    %     else
     mouseDown = true;
-    %    end
   end
 
   function mouseUpListener(src,event);
@@ -1601,10 +1576,28 @@ while ~quitGame
     generateBots;
   elseif f == 6
     botsFire
- end
+  end
   pause(FRAME_DELAY); %freeze program for each frame.
   
 end
 close(fig);
+
+
+%input: x, y, width, height for one rectangle,
+%       EITHER x, y, for test point
+%       OR, x, y, width, height, for test rectangle
+function [hit] = hitTest (x1, y1, w1, h1, x2, y2, varargin)
+if size(varargin, 2) == 0
+  w2 = 0;
+  h2 = 0;
+elseif size(varargin, 2) == 2
+  w2 = varargin{1};
+  h2 = varargin{2};
+end
+hit = (x2 + w2) > x1 && ...
+  x2 < (x1 + w1) && ...
+  (y2 + h2) > y1 && ...
+  y2 < (y1 + h1);
+end
 
 end
