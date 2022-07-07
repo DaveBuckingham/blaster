@@ -61,7 +61,7 @@
 %1.5 real seconds.
 
 
-function [] = shooter03()
+function [] = blaster04()
 
 close all
 clear all
